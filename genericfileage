@@ -214,19 +214,19 @@ if ($lasfileupdate >= $criticalmaxage) {
 	$exitPrint = "Warning | File $monitoringfile not updated in $lasfileupdate seconds";
 	$exitStatus = "1";
 } else {
-	# Checking if some malicious sysadmin is trying to cheat the script
+	# Checking if some malicious sysadmin is trying to cheat the script with 'touch'
 	$filemd5 = doubleCheck($monitoringfile);
 	open(DBFILE, $dbfile) or genericExitFunc(1, "Error trying to open the file $dbfile\n");
 	$dbmd5 = <DBFILE>;
 	close(DBFILE);
-	if ($dbmd5 != "" && $dbmd5 == $filemd5) {
+	if ($dbmd5 ne "" && $dbmd5 eq $filemd5) {
+		print "$dbmd5\n";
 		$exitPrint = "CRITICAL | File $monitoringfile does not seem to be being updated";
 		$exitStatus = "2";
 		open(DBFILE, "> $dbfile") or genericExitFunc(1, "Error trying to open the file $dbfile\n");
 		print DBFILE "$filemd5";
 		close(DBFILE);
-	} elsif ($dbmd5 !~ /^[a-z0-9]+$/) {
-		print "$dbmd5\n";
+	} elsif ($dbmd5 eq "") {
 		$exitPrint = "CRITICAL | File $monitoringfile has no any old md5 reference";
 		$exitStatus = "2";
 		open(DBFILE, "> $dbfile") or genericExitFunc(1, "Error trying to open the file $dbfile\n");
