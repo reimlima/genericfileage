@@ -82,6 +82,7 @@ use strict;
 use JSON;
 use File::stat;
 use XML::Simple;
+use Sys::Hostname;
 use Config::Simple;
 use Digest::MD5 qw(md5_hex);
 
@@ -111,6 +112,7 @@ my $criticalmaxage;
 my $monitoringfile;
 my $doublecheckfile;
 my $timestamp = time();
+my $hostname = hostname;
 my $configfile = 'genericfileage.conf';
 
 #[ Command line option for config file recovery ]------------------------------#
@@ -173,7 +175,7 @@ sub xmlGenerate {
 	$exitPrint = shift;
 	$exitStatus = shift;
 	$xmloutput = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-	$ds = {fileage => [{timestamp => [$timestamp], exitMessage => [$exitPrint], exitStatus => [$exitStatus]}]};
+	$ds = {fileage => [{hostname => [$hostname], timestamp => [$timestamp], exitMessage => [$exitPrint], exitStatus => [$exitStatus]}]};
 	$xmloutput .= XMLout($ds, Rootname => "");
 	return $xmloutput;
 }
@@ -184,7 +186,7 @@ sub jsonGenerate {
 	$timestamp = shift;
 	$exitPrint = shift;
 	$exitStatus = shift;
-	%ds = ('fileage' => [{'timestamp' => $timestamp}, {'exitMessage' => $exitPrint}, {'exitStatus' => $exitStatus}]);
+	%ds = ('fileage' => [{'hostname' => $hostname}, {'timestamp' => $timestamp}, {'exitMessage' => $exitPrint}, {'exitStatus' => $exitStatus}]);
 	$jsonoutput = encode_json \%ds;
 	return $jsonoutput;
 }
